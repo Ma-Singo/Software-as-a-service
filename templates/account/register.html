@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - My Site{% endblock %}
+
+{% block content %}
+    <form action="{% url 'account_signup' %}" method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit">Creat Account</button>
+    </form>
+{% endblock %}
