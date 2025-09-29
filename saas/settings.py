@@ -54,8 +54,11 @@ INSTALLED_APPS = [
 
     # Custom Apps
     'users',
+    'customers',
 
     # Third Party apps 
+    'rest_framework',
+
     "allauth",
     "allauth.account",
     #'allauth.socialaccount',
@@ -63,7 +66,7 @@ INSTALLED_APPS = [
 
 ]
 
-AUTH_USER_MODEL = 'users.User' 
+AUTH_USER_MODEL = 'users.CustomUser' 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -191,6 +194,13 @@ LOGIN_URL = 'login'
 
 #EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Database configuration
+
+CONN_MAX_AGE = config("CONN_MAX_AGE", cast=int, default=300)
+DATABASE_URL = config("DATABASE_URL", default=None)
+
+
 
 
 

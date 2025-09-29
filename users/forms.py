@@ -1,22 +1,28 @@
 from django import forms
+from django.core.validators import RegexValidator
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+from django.core.exceptions import ValidationError
 
-from .models import User
+from .models import CustomUser
 
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
-        model = User
-        fields = UserCreationForm.Meta.fields + ("phone",)
+        model = CustomUser
+        fields = UserCreationForm.Meta.fields + ("phone_number", "image")
 
 
 class CustomUserChangeForm(UserChangeForm):
 
-    class Meta:
-        model = User
+    class Meta(UserChangeForm.Meta):
+        model = CustomUser
         fields = UserChangeForm.Meta.fields
 
 
+def validate_image_size(image):
+    max_size = 2 * 1024 # 2 MB
+    if image.size > max_size:
+        raise ValidationError("Image file too large( > 2 MB)")
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(
@@ -54,14 +60,28 @@ class SignUpForm(UserCreationForm):
     phone = forms.CharField(
         max_length=15, 
         required=True,
+        validators=[
+            RegexValidator(
+                regex=r'^\d{9}$',
+                message="Phone number must be exactly 9 digits long and contain only numbers."
+            )
+        ],
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'Enter your phone number'
         })
     )
 
+    image = forms.ImageField(
+        allow_empty_file=True,
+        required=False,
+        validators=[
+            validate_image_size 
+        ]
+    )
+
     password1 = forms.CharField(
-        max_length=15, 
+        max_length=254, 
         required=True,
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
@@ -69,7 +89,7 @@ class SignUpForm(UserCreationForm):
         })
     )
     password2 = forms.CharField(
-        max_length=15, 
+        max_length=254, 
         required=True,
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
@@ -79,6 +99,6 @@ class SignUpForm(UserCreationForm):
 
 
     class Meta:
-        model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'phone', 'password1', 'password2')
+        model = CustomUser
+        fields = UserCreationForm.Meta.fields + ("phone_number", "image")
     

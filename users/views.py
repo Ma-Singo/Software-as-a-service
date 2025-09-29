@@ -5,7 +5,7 @@ from django.contrib.auth import login
 from django.contrib import messages
 from django.views.generic import CreateView
 
-from .forms import CustomUserCreationForm, SignUpForm
+from .forms import CustomUserCreationForm, SignUpForm 
 
 class SignupView(CreateView):
     form_class = CustomUserCreationForm
@@ -22,6 +22,7 @@ def signup_view(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
+            user.backend = 'allauth.account.auth_backends.AuthenticationBackend'
             login(request, user)
             messages.success(request, 'Account created successfully! Welcome to our site.')
             return redirect('home')
@@ -36,7 +37,7 @@ def signup_view(request):
 @login_required
 def register_view(request):
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
             user.backend = 'allauth.account.auth_backends.AuthenticationBackend'
@@ -44,5 +45,5 @@ def register_view(request):
             login(request, user)
             return redirect('home')
     else:
-        form = CustomUserCreationForm()
-    return render(request, 'registration/register.html', {"form": form})
+        form = SignUpForm()
+    return render(request, 'signup.html', {"form": form})
