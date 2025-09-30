@@ -1,4 +1,4 @@
-FROM python:3.14.0rc3-alpine3.22
+FROM python:3.13-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -6,9 +6,9 @@ ENV PYTHONUNBUFFERED=1
 
 RUN pip install --upgrade pip
 
-WORKDIR /src/app
+WORKDIR /usr/src/app
 
-COPY requirements.txt /src/app/requirements.txt
+COPY requirements.txt /usr/src/app/requirements.txt
 
 RUN pip install -r requirements.txt 
 
@@ -17,9 +17,9 @@ COPY . .
 
 EXPOSE 8000
 
-ENTRYPOINT ["/src/app/entrypoint.sh"]
+ENTRYPOINT ["python", "manage.py"]
 
-CMD ["python3", "manage.py", "runserver"]
+CMD [ "runserver" ]
 
 
 
