@@ -20,17 +20,17 @@ class SubscriptionStatus(models.TextChoices):
     PAUSED = 'paused', 'Paused'
 
 
-class Subscriptions(models.Model):
-    SUBSCRIPTION_PERMISSIONS = [
-        ("basic", "Basic"), 
-        ("pro", "Pro"), 
-        ("advanced", "Advanced"),
-        
-    ]
+class Subscription(models.Model):
+
+    class Subscription_Permissions(models.TextChoices):
+        BASIC = 'basic', 'Basic'
+        PRO = "pro", "Pro"
+        ADVANCED = 'advanced', "Advanced"
+
     name = models.CharField(max_length=25)
     is_active = models.BooleanField(default=True)
     description = models.CharField(max_length=256, blank=True, null=True)
-    permission_level = models.CharField(max_length=15, choices=SUBSCRIPTION_PERMISSIONS, default="basic")
+    permission_level = models.CharField(max_length=15, choices=Subscription_Permissions.choices, default=Subscription_Permissions.BASIC)
     stripe_product_id = models.CharField(max_length=120, null=True, blank=True)
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)
