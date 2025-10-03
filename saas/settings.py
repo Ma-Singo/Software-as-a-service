@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     # Custom Apps
     'users',
     'customers',
+    "apis",
+    "subscriptions", 
 
     # Third Party apps 
     'rest_framework',
