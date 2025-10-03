@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-
+from django.urls import reverse
 
 
 from helpers import stripe_template
@@ -83,7 +83,7 @@ class SubscriptionPrice(models.Model):
         YEARLY = "year", "Yearly"
 
     subscription = models.ForeignKey(
-        Subscriptions,
+        Subscription,
         on_delete=models.SET_NULL,
         null=True,
         related_name="subscription_prices"
@@ -144,5 +144,32 @@ class SubscriptionPrice(models.Model):
 
     
 
-
+class UserSubscription(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, blank=True, null=True)
+    stripe_id = models.CharField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=SubscriptionStatus.choices, blank=True, null=True)
+    current_period_start = models.DateTimeField(blank=True, null=True)
+    current_period_end = models.DateTimeField(blank=True, null=True)
+    cancel_at_period_end = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.user.email} - ({self.status})"
+    
+    def get_absolute_url(self):
+        return reverse("user_subscription")
+    
+    @property
+    def is_active(self):
+        return self.status in ['trialing', 'active']
+    
+    @property
+    def is_trialing(self):
+        return self.status == 'trialing' and self.trial_end and self.trial_end > timezone.now()
 

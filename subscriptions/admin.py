@@ -1,9 +1,9 @@
 from django.contrib import admin
 
 from subscriptions.models import (
-    Subscriptions,
+    Subscription,
     SubscriptionPrice
 )
 
-admin.site.register(Subscriptions)
+admin.site.register(Subscription)
 admin.site.register(SubscriptionPrice)
